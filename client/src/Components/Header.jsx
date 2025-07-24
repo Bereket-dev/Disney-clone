@@ -69,7 +69,7 @@ function Header() {
               />
             </button>
             {menuOpen && (
-              <div className="absolute top-[20px] left-0 flex w-max min-w-[150px] flex-col justify-center rounded-sm border border-gray-600 bg-gray-950 md:inline-flex md:flex-row md:p-0">
+              <div className="absolute top-[20px] left-0 z-50 flex w-max min-w-[150px] flex-col justify-center rounded-sm border border-gray-600 bg-gray-950 md:inline-flex md:flex-row md:p-0">
                 {navItems.slice(-3).map(({ icon, label }) => (
                   <a
                     key={label}
