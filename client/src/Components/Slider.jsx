@@ -1,64 +1,76 @@
-import React, { useEffect, useState } from 'react'
-import Slider1 from '../assets/images/slider_1.png'
-import Slider2 from '../assets/images/slider_2.png'
-import Slider3 from '../assets/images/slider_3.png'
+import React, { useEffect, useRef, useState } from 'react'
+import { fetchTrendingMovies, IMAGE_BASE_URL } from '../api/tmdb'
 import RightAngleIcon from '../assets/icons/chevron-right.svg'
 import LeftAngleIcon from '../assets/icons/chevron-left.svg'
 
 function Slider() {
-  const sliders = [
-    { image: Slider1, label: 'slider 1' },
-    { image: Slider2, label: 'slider 2' },
-    { image: Slider3, label: 'slider 3' },
-  ]
+  const elementRef = useRef()
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
 
-  const [currentIndex, setCurrentIndex] = useState(0)
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const [movies, setMovies] = useState([])
   const [isHovered, setIsHovered] = useState(false)
 
-  const prevIndex = () => {
-    setCurrentIndex((prev) => (prev === 0 ? sliders.length - 1 : prev - 1))
+  useEffect(() => {
+    const getMovies = async () => {
+      try {
+        const data = await fetchTrendingMovies()
+        setMovies(data.slice(0, 5))
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    getMovies()
+  }, [])
+
+  const sliderRight = (element) => {
+    element.scrollLeft += screenWidth - 110
   }
 
-  const nextIndex = () => {
-    setCurrentIndex((prev) => (prev + 1) % sliders.length)
+  const sliderLeft = (element) => {
+    element.scrollLeft -= screenWidth - 110
   }
 
   useEffect(() => {
-    if (isHovered) return
+    if (isHovered || !elementRef.current) return
+
     const interval = setInterval(() => {
-      nextIndex()
+      sliderLeft(elementRef.current)
     }, 5000)
     return () => clearInterval(interval)
-  }, [currentIndex, isHovered])
+  }, [isHovered])
 
   return (
-    <div className="relative h-[200px] w-full px-6">
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group scrollbar-hide flex h-[200px] w-full overflow-x-auto scroll-smooth px-16 py-4 md:h-[315px]"
+      ref={elementRef}
+    >
+      {movies.map((movie) => (
+        <img
+          key={movie.id}
+          src={`${IMAGE_BASE_URL}${movie.backdrop_path || movie.poster_path}`}
+          alt={movie.title}
+          className="mr-5 w-full flex-shrink-0 rounded-lg object-cover object-left-top hover:border-2 hover:border-gray-200/70"
+        />
+      ))}
       <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="group mx-auto flex h-full w-[80%] gap-3"
+        onClick={() => sliderLeft(elementRef.current)}
+        className="absolute top-[220px] left-4 hidden -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 group-hover:block"
       >
-        {sliders.map((slide, index) => (
-          <img
-            key={index}
-            src={slide.image}
-            alt={slide.label}
-            className="w-full flex-shrink-0 overflow-hidden object-cover transition-transform duration-700 ease-in-out"
-            style={{ transform: `translatex(-${currentIndex * 100}%)` }}
-          />
-        ))}
-        <div
-          onClick={prevIndex}
-          className="absolute top-1/2 left-4 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 group-hover:block"
-        >
-          <img src={LeftAngleIcon} alt="left angle icon" />
-        </div>
-        <div
-          onClick={nextIndex}
-          className="absolute top-1/2 right-4 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 group-hover:block"
-        >
-          <img src={RightAngleIcon} alt="right angle icon" />
-        </div>
+        <img src={LeftAngleIcon} alt="left angle icon" />
+      </div>
+      <div
+        onClick={() => sliderRight(elementRef.current)}
+        className="absolute top-[220px] right-4 hidden -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 group-hover:block"
+      >
+        <img src={RightAngleIcon} alt="right angle icon" />
       </div>
     </div>
   )
