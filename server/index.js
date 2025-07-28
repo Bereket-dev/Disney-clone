@@ -1,19 +1,30 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const cors = require("cors");
-require("dotenv").config();
+const userRoutes = require("./routes/userRoutes");
+const movieRoutes = require("./routes/MovieRoutes");
+
+dotenv.config();
+
+const port = process.env.PORT;
+const apikey = process.env.TMDB_API_KEY;
+const db = process.env.MONGO_URI;
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
+//routes
+app.use("/users", userRoutes);
+app.use("/api/movies", movieRoutes);
 
-// Sample route
-app.get("/", (req, res) => res.send("API Running"));
+mongoose
+  .connect(db)
+  .then(() => {
+    console.log("mongodb connected successfully!");
+  })
+  .catch((err) => {
+    console.log("mongodb connection failed: ", err);
+  });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(port, () => console.log(`\nPort is running on ${port}`));
