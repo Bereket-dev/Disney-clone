@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { fetchTrendingMovies, IMAGE_BASE_URL } from '../api/tmdb'
+import { fetchTrendingMovies, IMAGE_BASE_URL } from '../api/index'
 import RightAngleIcon from '../assets/icons/chevron-right.svg'
 import LeftAngleIcon from '../assets/icons/chevron-left.svg'
 
@@ -57,7 +57,7 @@ function Slider() {
           key={movie.id}
           src={`${IMAGE_BASE_URL}${movie.backdrop_path || movie.poster_path}`}
           alt={movie.title}
-          className="mr-5 w-full flex-shrink-0 rounded-lg object-cover object-left-top hover:border-2 hover:border-gray-200/70"
+          className="mr-5 h-full w-full flex-shrink-0 rounded-lg object-cover object-left-top hover:border-2 hover:border-gray-200/70"
         />
       ))}
       <div

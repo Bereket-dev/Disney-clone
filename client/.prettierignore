@@ -1,0 +1,29 @@
+# Node dependencies
+node_modules
+
+# Build output
+dist
+build
+
+# Public assets (images, fonts, etc.)
+public
+
+# Vite cache
+.vite
+
+# Optional: test coverage output
+coverage
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.* 
+
+# IDE settings
+.vscode
+.idea
+
+# Git
+.git
